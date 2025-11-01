@@ -12,12 +12,10 @@ import { adminMiddleware } from "../middlewares/role.middleware";
 
 const router = Router();
 
-// Admin-protected routes
 router.post("/", authMiddleware, adminMiddleware, createVehicle);
 router.put("/:id", authMiddleware, adminMiddleware, updateVehicle);
 router.delete("/:id", authMiddleware, adminMiddleware, deleteVehicle);
 
-// Public / general routes
 router.get("/", getAllVehicles);
 router.get("/:id", getVehicleById);
 
