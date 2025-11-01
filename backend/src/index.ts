@@ -1,17 +1,16 @@
 import express, { Application, Request, Response } from 'express';
+import userRoutes from "./routes/user.routes";
 
-const app: Application = express();
-const PORT = process.env.PORT || 3000;
+const app = express();
 
-// Middleware
 app.use(express.json());
 
-app.use('/api',(req: Request, res : Response) =>{
-  res.status(200).json({ message: 'Hello, TypeScript + Express!' });
+app.use("/api/users", userRoutes);
+
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong!" });
 });
 
+export default app;
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
