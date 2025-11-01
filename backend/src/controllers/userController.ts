@@ -1,91 +1,71 @@
 import { Request, Response } from "express";
-import { IUser } from "../types/user.types";
 import { User } from "../model/user";
 import { HTTP_STATUS } from "../constants/status";
-import jwt from "../helpers/jwt";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-// Create a new user
-export const createUser = async (req: Request, res: Response) => {
+dotenv.config();
+
+export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const {
+      name,
+      email,
+      password,
+      phone,
+      role,
+      balance,
+      subscriptionStatus,
+      isKYCVerified,
+      idType,
+      idNumber,
+      licensePhoto,
+      livePhoto,
+    } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Name, email, and password are required" });
+    }
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Email already registered" });     
+    if (existingUser) {
+      return res.status(HTTP_STATUS.CONFLICT).json({ message: "User already exists" });
+    }
 
-    const newUser = new User(req.body);
-    await newUser.save();
-    const { passwordHash, ...userData } = newUser.toObject();
-    res.status(HTTP_STATUS.CREATED).json(userData);
-  } catch (err: any) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
-  }
-};
+    const newUser = await User.create({
+      name,
+      email,
+      passwordHash: password, 
+      phone,
+      role,
+      balance,
+      subscriptionStatus,
+      isKYCVerified,
+      idType,
+      idNumber,
+      licensePhoto,
+      livePhoto,
+    });
 
-// Get all users with optional pagination
-export const getUsers = async (req: Request, res: Response) => {
-  try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const skip = (page - 1) * limit;
-
-    const users = await User.find()
-      .skip(skip)
-      .limit(limit)
-      .select("-password_hash"); 
-
-    const total = await User.countDocuments();
-
-    res.status(HTTP_STATUS.OK).json({ total, page, limit, users });
-  } catch (err: any) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
-  }
-};
-
-// Get user profile
-export const getProfile = async (req: Request, res: Response) => {
-  try {
-    const user = await User.findById(req.userId).select("-password_hash");
-    if (!user) return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
-
-    res.status(HTTP_STATUS.OK).json(user);
-  } catch (err: any) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
-  }
-};
-
-// Get user by ID
-export const getUserById = async (req: Request, res: Response) => {
-  try {
-    const user = await User.findById(req.params.id).select("-password_hash");
-    if (!user) return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
-
-    res.status(HTTP_STATUS.OK).json(user);
-  } catch (err: any) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
-  }
-};
-
-// Update user
-export const updateUser = async (req: Request, res: Response) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select("-password_hash");
-    if (!updatedUser) return res.status(404).json({ message: "User not found" });
-
-    res.status(200).json(updatedUser);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// Delete user
-export const deleteUser = async (req: Request, res: Response) => {
-  try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
-    if (!deletedUser) return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
-
-    res.status(HTTP_STATUS.OK).json({ message: "User deleted successfully" });
-  } catch (err: any) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
+    return res.status(HTTP_STATUS.CREATED).json({
+      message: "User registered successfully",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        balance: newUser.balance,
+        subscriptionStatus: newUser.subscriptionStatus,
+        isKYCVerified: newUser.isKYCVerified,
+        idType: newUser.idType,
+        idNumber: newUser.idNumber,
+        licensePhoto: newUser.licensePhoto,
+        livePhoto: newUser.livePhoto,
+      },
+    });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error instanceof Error ? error.message : String(error) });
   }
 };
 
@@ -94,29 +74,91 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists
+    if (!email || !password) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Email and password are required" });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid email or password" });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
     }
 
-    // Check password (plain text, since no hashing)
-    if (user.password_hash !== password) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid email or password" });
+    
+    if (password !== user.passwordHash) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid credentials" });
     }
 
-    // Generate JWT
     const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET || "your_jwt_secret",
-      { expiresIn: "7d" } // token valid for 7 days
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "7d" }
     );
 
-    // Exclude passwordHash from response
-    const { passwordHash, ...userData } = user.toObject();
+    return res.status(HTTP_STATUS.OK).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        balance: user.balance,
+        subscriptionStatus: user.subscriptionStatus,
+        isKYCVerified: user.isKYCVerified,
+        idType: user.idType,
+        idNumber: user.idNumber,
+        licensePhoto: user.licensePhoto,
+        livePhoto: user.livePhoto,
+      },
+    });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: error instanceof Error ? error.message : String(error) });
+  }
+};
 
-     res.status(HTTP_STATUS.OK).json({ user: userData, token });
-  } catch (err: any) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
+// Get profile
+export const getProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "User not authenticated" });
+    }
+
+    const user = await User.findById(userId).select("-passwordHash");
+    if (!user) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
+    }
+
+    return res.status(HTTP_STATUS.OK).json(user);
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: "Server error",
+      error: (error as Error).message,
+    });
+  }
+};
+
+// Update profile
+export const updateProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.userId;
+    const updates = req.body;
+
+    // Hash password if it's being updated
+    if (updates.password) {
+      updates.passwordHash = await bcrypt.hash(updates.password, 10);
+      delete updates.password;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, { new: true }).select("-passwordHash");
+
+    if (!updatedUser) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
+    }
+
+    return res.status(HTTP_STATUS.OK).json({ message: "Profile updated successfully", user: updatedUser });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Server error", error });
   }
 };
