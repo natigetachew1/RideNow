@@ -1,0 +1,24 @@
+{
+  "name": "ts-app",
+  "version": "1.0.0",
+  "description": "Simple TypeScript project",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --watch src --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.5",
+    "@types/mongoose": "^5.11.96"
+  }
+}
