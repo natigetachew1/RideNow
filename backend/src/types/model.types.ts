@@ -1,16 +1,13 @@
 import { Document } from "mongoose";
 
-export interface IUser extends Document {
+export interface IUser {
   name: string;
   email: string;
-  password_hash: string;
+  passwordHash: string;
   phone?: string;
-  id_type?: string;
-  id_number?: string;
-  license_photo?: string;
-  live_photo?: string;
-  wallet_balance: number;
-  subscription_status: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  role: 'admin' | 'user' | 'maintenance';
+  walletBalance: number;
+  subscriptionStatus: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
