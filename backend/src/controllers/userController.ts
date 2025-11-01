@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { IUser } from "../types/user.types";
 import { User } from "../model/user";
 import { HTTP_STATUS } from "../constants/status";
+import jwt from "../helpers/jwt";
 
 // Create a new user
 export const createUser = async (req: Request, res: Response) => {
@@ -83,6 +84,38 @@ export const deleteUser = async (req: Request, res: Response) => {
     if (!deletedUser) return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
 
     res.status(HTTP_STATUS.OK).json({ message: "User deleted successfully" });
+  } catch (err: any) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
+  }
+};
+
+// Login user
+export const loginUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid email or password" });
+    }
+
+    // Check password (plain text, since no hashing)
+    if (user.password_hash !== password) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid email or password" });
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "your_jwt_secret",
+      { expiresIn: "7d" } // token valid for 7 days
+    );
+
+    // Exclude passwordHash from response
+    const { passwordHash, ...userData } = user.toObject();
+
+     res.status(HTTP_STATUS.OK).json({ user: userData, token });
   } catch (err: any) {
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
   }

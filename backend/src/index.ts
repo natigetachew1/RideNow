@@ -1,5 +1,8 @@
 import express, { Application, Request, Response } from 'express';
 import userRoutes from "./routes/user.routes";
+import { connectDB } from './config/db';
+
+connectDB();
 
 const app = express();
 
