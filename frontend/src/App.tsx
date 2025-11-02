@@ -74,6 +74,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+import Dashboard from './page/Dashboard';
 
 function App() {
   return (
