@@ -5,11 +5,13 @@ import { connectDB } from './config/db';
 import cors from 'cors'
 import dotenv from 'dotenv';
 import locationRoutes from './routes/location.routes'
+import adRouter from './routes/ad.routes';
+
 
 dotenv.config();
 connectDB();
-
-const PORT = process.env.PORT || 3000;
+const HOST = "0.0.0.0";
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const app = express();
 
 app.use(cors({
@@ -27,14 +29,15 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/locations", locationRoutes);
+app.use('/api/ads', adRouter);
 
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
   res.status(500).json({ message: "Something went wrong!" });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server running at http://${HOST}:${PORT}`);
 });
 
 export default app;
