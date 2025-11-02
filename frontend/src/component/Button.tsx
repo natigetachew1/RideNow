@@ -22,7 +22,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
 }, ref) => {
   const buttonClasses = `inline-flex items-center justify-center ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`;
 
-  // If href is provided, render an anchor tag
   if (href) {
     return (
       <a
@@ -36,7 +35,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
     );
   }
 
-  // Otherwise, render a button
+ 
   return (
     <button
       type={type}
