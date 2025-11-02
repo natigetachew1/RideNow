@@ -5,9 +5,9 @@ const vehicleSchema = new Schema<IVehicle>({
   vehicleType: { type: String, enum: ['scooter', 'bike'], required: true },
   model: { type: String, required: true },
   serialNumber: { type: String, required: true, unique: true },
-  batteryLevel: { type: Number, default: 100 },
+  description: { type: String, required: true },
   location: { lat: Number, lng: Number },
-  status: { type: String, enum: ['available','in_use','maintenance'], default: 'available' },
+  status: { type: String, enum: ['forRent','forDelivery','inAvailable'] },
   lastMaintenance: Date,
 }, { timestamps: true });
 
