@@ -4,6 +4,7 @@ import vehicleRoutes from './routes/vehicle.routes'
 import { connectDB } from './config/db';
 import cors from 'cors'
 import dotenv from 'dotenv';
+import locationRoutes from './routes/location.routes'
 
 dotenv.config();
 connectDB();
@@ -25,6 +26,7 @@ app.use(express.json());
 
 app.use("/api/users", userRoutes);
 app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/locations", locationRoutes);
 
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
