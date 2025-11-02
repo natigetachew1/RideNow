@@ -3,6 +3,7 @@ import Home from "./page/Home";
 import Signup from './page/Signup';
 import Login from './page/Login';
 import KYCVerification from './page/KYCVerification';
+import Dashboard from './page/dashboard';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/kyc-verification" element={<KYCVerification />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
     </Router>
