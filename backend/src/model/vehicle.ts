@@ -9,6 +9,7 @@ const vehicleSchema = new Schema<IVehicle>({
   location: { lat: Number, lng: Number },
   status: { type: String, enum: ['forRent','forDelivery','inAvailable'] },
   lastMaintenance: Date,
+  pricePerHour : { type: Number, required: true },
 }, { timestamps: true });
 
 export const Vehicle = model<IVehicle>('Vehicle', vehicleSchema);

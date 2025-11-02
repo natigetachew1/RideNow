@@ -1,8 +1,10 @@
 import express, { Application, Request, Response } from 'express';
 import userRoutes from "./routes/user.routes";
+import vehicleRoutes from './routes/vehicle.routes'
 import { connectDB } from './config/db';
 import cors from 'cors'
 import dotenv from 'dotenv';
+
 dotenv.config();
 connectDB();
 
@@ -22,6 +24,7 @@ app.get("/test", (req: Request, res: Response) => {
 app.use(express.json());
 
 app.use("/api/users", userRoutes);
+app.use("/api/vehicles", vehicleRoutes);
 
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
