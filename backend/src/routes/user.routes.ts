@@ -1,22 +1,12 @@
 import { Router } from "express";
-import {
-  createUser,
-  getUsers,
-  getUserById,
-  getProfile,
-  updateUser,
-  deleteUser,
-} from "../controllers/userController";
-
-import { authMiddleware } from "../middlewares/auth.middleware"; 
+import { registerUser, loginUser, getProfile, updateProfile } from "../controllers/userController";
+import { authMiddleware,authenticateJWT } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.post("/", createUser);
-router.get("/", authMiddleware, getUsers);
-router.get("/profile", authMiddleware, getProfile);
-router.get("/:id", authMiddleware, getUserById);
-router.put("/:id", authMiddleware, updateUser);
-router.delete("/:id", authMiddleware, deleteUser);
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.get("/profile", authenticateJWT, getProfile);
+router.put("/profile", authMiddleware, updateProfile);
 
 export default router;

@@ -5,10 +5,9 @@ import Navigation from '../component/Navigation';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [locationEnabled, setLocationEnabled] = useState(false);
+  const [activeMode, setActiveMode] = useState<'find' | 'rent'>('find');
   const [userData, setUserData] = useState({
     name: 'John Doe',
-    balance: 4250.75,
-    earnings: 8960,
     isRenter: true
   });
 
@@ -127,173 +126,223 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Wallet & Stats */}
+        {/* Mode Toggle */}
         <div className="px-4 mt-6">
-          <div className="bg-gradient-to-r from-gray-900 to-gray-700 rounded-2xl p-6 text-white">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-gray-300 text-sm font-medium">Available Balance</p>
-                <p className="text-3xl font-bold mt-1">{formatCurrency(userData.balance)}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-gray-300 text-sm font-medium">Monthly Earnings</p>
-                <p className="text-xl font-bold mt-1">{formatCurrency(userData.earnings)}</p>
-              </div>
-            </div>
-            <div className="flex space-x-3">
-              <button className="flex-1 bg-white text-gray-900 py-3 rounded-xl font-semibold text-center text-sm hover:bg-gray-100 transition-colors">
-                Add Funds
-              </button>
-              <button className="flex-1 bg-white/10 text-white py-3 rounded-xl font-semibold text-center text-sm hover:bg-white/20 transition-colors">
-                Withdraw
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="px-4 mt-6">
-          <div className="grid grid-cols-2 gap-4">
-            <button 
-              onClick={() => navigate('/map')}
-              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 text-left hover:shadow-md transition-shadow active:scale-95 transition-transform"
-            >
-              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900">Find Bikes</h3>
-              <p className="text-sm text-gray-600 mt-1">View available bikes on map</p>
-            </button>
-
-            <button 
-              onClick={() => navigate('/rent')}
-              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 text-left hover:shadow-md transition-shadow active:scale-95 transition-transform"
-            >
-              <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900">Rent Bike</h3>
-              <p className="text-sm text-gray-600 mt-1">Browse and book bicycles</p>
-            </button>
-
-            <button 
-              onClick={() => navigate('/add-bike')}
-              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 text-left hover:shadow-md transition-shadow active:scale-95 transition-transform"
-            >
-              <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900">List Bike</h3>
-              <p className="text-sm text-gray-600 mt-1">Earn from your bicycle</p>
-            </button>
-
-            <button 
-              onClick={() => navigate('/bookings')}
-              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 text-left hover:shadow-md transition-shadow active:scale-95 transition-transform"
-            >
-              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-gray-900">My Bookings</h3>
-              <p className="text-sm text-gray-600 mt-1">View rental history</p>
-            </button>
-          </div>
-        </div>
-
-        {/* Active Bookings */}
-        <div className="px-4 mt-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Active Rentals</h2>
-            <button 
-              onClick={() => navigate('/bookings')}
-              className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
-            >
-              View All
-            </button>
-          </div>
-          <div className="space-y-3">
-            {activeBookings.map((booking) => (
-              <div key={booking.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-3 h-3 rounded-full ${booking.type === 'renting' ? 'bg-blue-500' : 'bg-green-500'}`}></div>
-                    <div>
-                      <p className="font-semibold text-gray-900">{booking.bikeName}</p>
-                      <p className="text-sm text-gray-600">
-                        {booking.type === 'renting' ? 'Renting' : `Rented to ${booking.customer}`} • {booking.time}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-green-600">{formatCurrency(booking.amount)}</p>
-                    <p className="text-xs text-gray-600">{booking.type === 'renting' ? 'Payment' : 'Earning'}</p>
-                  </div>
+          <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-200">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setActiveMode('find')}
+                className={`py-3 px-4 rounded-xl font-semibold text-sm transition-all ${
+                  activeMode === 'find'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <span>Find Vehicle</span>
                 </div>
-              </div>
-            ))}
+              </button>
+              <button
+                onClick={() => setActiveMode('rent')}
+                className={`py-3 px-4 rounded-xl font-semibold text-sm transition-all ${
+                  activeMode === 'rent'
+                    ? 'bg-green-600 text-white shadow-md'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  <span>Rent Vehicle</span>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Nearby Bikes */}
-        <div className="px-4 mt-8 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Available Bikes</h2>
-            <button 
-              onClick={() => navigate('/rent')}
-              className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
-            >
-              View All
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {nearbyBikes.map((bike) => (
-              <div key={bike.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-start space-x-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center border border-blue-200">
+        {/* Content based on active mode */}
+        {activeMode === 'find' ? (
+          <>
+            {/* Find Vehicle Mode */}
+            <div className="px-4 mt-6">
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => navigate('/map')}
+                  className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 text-left hover:shadow-md transition-shadow active:scale-95 transition-transform"
+                >
+                  <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-3">
                     <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                     </svg>
                   </div>
+                  <h3 className="font-semibold text-gray-900">View Map</h3>
+                  <p className="text-sm text-gray-600 mt-1">Find bikes near you</p>
+                </button>
 
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{bike.name}</h3>
-                        <p className="text-sm text-gray-600">{bike.distance} km away</p>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <div className={`w-2 h-2 rounded-full ${bike.ownerOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                        <div className={`w-2 h-2 rounded-full ${bike.delivery ? 'bg-blue-500' : 'bg-gray-400'}`}></div>
-                      </div>
-                    </div>
+                <button 
+                  onClick={() => navigate('/bookings')}
+                  className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 text-left hover:shadow-md transition-shadow active:scale-95 transition-transform"
+                >
+                  <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center mb-3">
+                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="font-semibold text-gray-900">My Bookings</h3>
+                  <p className="text-sm text-gray-600 mt-1">View rental history</p>
+                </button>
+              </div>
+            </div>
 
-                    <div className="flex items-center justify-between mt-3">
-                      <div>
-                        <p className="text-lg font-bold text-blue-600">{formatCurrency(bike.price)}/hr</p>
-                        <p className="text-sm text-gray-600">{formatCurrency(bike.perMinute)}/min</p>
+            {/* Active Rentals */}
+            <div className="px-4 mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900">My Active Rentals</h2>
+                <button 
+                  onClick={() => navigate('/bookings')}
+                  className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
+                >
+                  View All
+                </button>
+              </div>
+              <div className="space-y-3">
+                {activeBookings.filter(b => b.type === 'renting').map((booking) => (
+                  <div key={booking.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{booking.bikeName}</p>
+                          <p className="text-sm text-gray-600">Renting • {booking.time}</p>
+                        </div>
                       </div>
-                      <button 
-                        onClick={() => navigate(`/bike/${bike.id}`)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors"
-                      >
-                        Rent
-                      </button>
+                      <div className="text-right">
+                        <p className="font-bold text-blue-600">{formatCurrency(booking.amount)}</p>
+                        <p className="text-xs text-gray-600">Payment</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+
+            {/* Available Bikes Nearby */}
+            <div className="px-4 mt-8 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Available Bikes Nearby</h2>
+                <button 
+                  onClick={() => navigate('/rent')}
+                  className="text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
+                >
+                  View All
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {nearbyBikes.map((bike) => (
+                  <div key={bike.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center border border-blue-200">
+                        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                      </div>
+
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{bike.name}</h3>
+                            <p className="text-sm text-gray-600">{bike.distance} km away</p>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <div className={`w-2 h-2 rounded-full ${bike.ownerOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                            <div className={`w-2 h-2 rounded-full ${bike.delivery ? 'bg-blue-500' : 'bg-gray-400'}`}></div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between mt-3">
+                          <div>
+                            <p className="text-lg font-bold text-blue-600">{formatCurrency(bike.price)}/hr</p>
+                            <p className="text-sm text-gray-600">{formatCurrency(bike.perMinute)}/min</p>
+                          </div>
+                          <button 
+                            onClick={() => navigate(`/bike/${bike.id}`)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors"
+                          >
+                            Rent Now
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Rent Vehicle Mode */}
+            <div className="px-4 mt-6">
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => navigate('/add-bike')}
+                  className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 text-left hover:shadow-md transition-shadow active:scale-95 transition-transform"
+                >
+                  <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mb-3">
+                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                  <h3 className="font-semibold text-gray-900">List Your Bike</h3>
+                  <p className="text-sm text-gray-600 mt-1">Start earning today</p>
+                </button>
+
+                <button 
+                  onClick={() => navigate('/my-listings')}
+                  className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 text-left hover:shadow-md transition-shadow active:scale-95 transition-transform"
+                >
+                  <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center mb-3">
+                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                  </div>
+                  <h3 className="font-semibold text-gray-900">My Listings</h3>
+                  <p className="text-sm text-gray-600 mt-1">Manage your bikes</p>
+                </button>
+              </div>
+            </div>
+
+            {/* Active Rentals Out */}
+            <div className="px-4 mt-8 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Currently Rented Out</h2>
+              </div>
+              <div className="space-y-3">
+                {activeBookings.filter(b => b.type === 'renting_out').map((booking) => (
+                  <div key={booking.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{booking.bikeName}</p>
+                          <p className="text-sm text-gray-600">Rented to {booking.customer} • {booking.time}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-green-600">{formatCurrency(booking.amount)}</p>
+                        <p className="text-xs text-gray-600">Earning</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </main>
 
       {/* Navigation Component */}

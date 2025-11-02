@@ -10,7 +10,12 @@ import BikeManagement from './page/BikeManagement';
 import ReportsPage from './page/ReportsPage';
 import AdminProfile from './page/AdminProfile';
 import UserManagement from './page/UserManagement';
-
+import Dashboard from './page/Dashboard';
+import MapPage from './page/MapPage';
+import Rent from './page/Rent';
+import Balance from './page/Balance';
+import Profile from './page/Profile';
+import EditProfile from './page/EditProfile';
 
 const useAuth = () => {
   const isAuthenticated = localStorage.getItem('isAdminAuthenticated') === 'true';
@@ -74,8 +79,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-import Dashboard from './page/Dashboard';
-
 function App() {
   return (
     <div className="w-full h-full">
@@ -92,6 +95,12 @@ function App() {
               </AdminLayout>
             </ProtectedRoute>
           } />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/rent" element={<Rent />} />
+          <Route path="/balance" element={<Balance />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
           <Route 
             path="/admin/dashboard" 
             element={
