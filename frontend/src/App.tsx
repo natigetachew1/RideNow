@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Home from "./page/Home";
 import Signup from './page/Signup';
@@ -11,7 +11,7 @@ import ReportsPage from './page/ReportsPage';
 import AdminProfile from './page/AdminProfile';
 import UserManagement from './page/UserManagement';
 
-// Simple auth context (in a real app, use a proper auth context)
+
 const useAuth = () => {
   const isAuthenticated = localStorage.getItem('isAdminAuthenticated') === 'true';
   return { isAuthenticated };
@@ -38,9 +38,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-import Sidebar from './components/Sidebar';
+import Sidebar from './component/Sidebar';
 
-// Admin layout with sidebar and content area
+
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
@@ -78,14 +78,20 @@ import Dashboard from './page/Dashboard';
 
 function App() {
   return (
-    <Router>
-      <div className="w-full h-full">
-        <Routes>
+    <div className="w-full h-full">
+      <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/kyc-verification" element={<KYCVerification />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
+            </ProtectedRoute>
+          } />
           <Route 
             path="/admin/dashboard" 
             element={
@@ -136,9 +142,8 @@ function App() {
               </ProtectedRoute>
             } 
           />
-        </Routes>
-      </div>
-    </Router>
+      </Routes>
+    </div>
   );
 }
 

@@ -38,6 +38,7 @@ const Home = () => {
                     <Button 
                         className="w-full h-14 border-2 border-blue-500 text-blue-600 text-lg font-semibold rounded-xl hover:bg-blue-50 transition-all duration-200 shadow-md"
                         btnTex="Log in"
+                        onClick={() => navigate('/login')}
                     />
                 </div>
             </div>
