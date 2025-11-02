@@ -1,25 +1,18 @@
 import { Router } from "express";
 import {
   createVehicle,
-  getAllVehicles,
+  getVehicles,
   getVehicleById,
   updateVehicle,
   deleteVehicle,
-  updateBatteryLevel,
 } from "../controllers/vehicle.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
-import { adminMiddleware } from "../middlewares/role.middleware";
 
 const router = Router();
 
-router.post("/", authMiddleware, adminMiddleware, createVehicle);
-router.put("/:id", authMiddleware, adminMiddleware, updateVehicle);
-router.delete("/:id", authMiddleware, adminMiddleware, deleteVehicle);
-
-router.get("/", getAllVehicles);
+router.post("/", createVehicle);
+router.get("/", getVehicles);
 router.get("/:id", getVehicleById);
-
-
-router.patch("/:id/battery", updateBatteryLevel);
+router.put("/:id", updateVehicle);
+router.delete("/:id", deleteVehicle);
 
 export default router;
