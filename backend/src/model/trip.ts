@@ -1,5 +1,7 @@
 import { ITrip } from "../types/trip.types";
 import { Schema, model } from "mongoose";
+import { Vehicle } from "./vehicle";
+import { User } from "./profile";
 
 const tripSchema = new Schema<ITrip>({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },

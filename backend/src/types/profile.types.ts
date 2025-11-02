@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export interface IUser extends Document {
+export interface IProfile extends Document {
   name: string;
   email: string;
   passwordHash: string;

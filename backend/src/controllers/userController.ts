@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../model/user";
+import { Profile } from "../model/profile";
 import { HTTP_STATUS } from "../constants/status";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -28,12 +28,12 @@ export const registerUser = async (req: Request, res: Response) => {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Name, email, and password are required" });
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await Profile.findOne({ email });
     if (existingUser) {
       return res.status(HTTP_STATUS.CONFLICT).json({ message: "User already exists" });
     }
 
-    const newUser = await User.create({
+    const newUser = await Profile.create({
       name,
       email,
       passwordHash: password, 
@@ -78,7 +78,7 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Email and password are required" });
     }
 
-    const user = await User.findOne({ email });
+    const user = await Profile.findOne({ email });
     if (!user) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
     }
@@ -125,7 +125,7 @@ export const getProfile = async (req: Request, res: Response) => {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "User not authenticated" });
     }
 
-    const user = await User.findById(userId).select("-passwordHash");
+    const user = await Profile.findById(userId).select("-passwordHash");
     if (!user) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });
     }
@@ -151,7 +151,7 @@ export const updateProfile = async (req: Request, res: Response) => {
       delete updates.password;
     }
 
-    const updatedUser = await User.findByIdAndUpdate(userId, updates, { new: true }).select("-passwordHash");
+    const updatedUser = await Profile.findByIdAndUpdate(userId, updates, { new: true }).select("-passwordHash");
 
     if (!updatedUser) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ message: "User not found" });

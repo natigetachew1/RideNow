@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IPayment } from "../types/payment";
 import { Trip } from "./trip";
-import { User } from "./user";
+import { User } from "./profile";
 
 const paymentSchema = new Schema<IPayment>({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
