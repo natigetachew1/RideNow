@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { IVehicle } from "../types/vehicle.types"; 
-import { Vehicle } from "../model/vehicle"; 
+import { Vehicle } from "../model/vehicle";
 
+// Create a new vehicle
 export const createVehicle = async (req: Request, res: Response) => {
   try {
     const vehicle = await Vehicle.create(req.body);
