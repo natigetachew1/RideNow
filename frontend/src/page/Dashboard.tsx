@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navigation from '../component/navigation';
+import Navigation from '../component/Navigation';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -63,14 +63,28 @@ const Dashboard = () => {
               <p className="text-xs text-gray-600">Bike Sharing Platform</p>
             </div>
           </div>
-          <button 
-            onClick={() => navigate('/notifications')}
-            className="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center hover:bg-gray-200 transition-colors"
-          >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.24 8.56a5.97 5.97 0 01-3.79 2.94 1 1 0 00-.45 1.67 3 3 0 003.62 3.62 1 1 0 001.67-.45 5.97 5.97 0 012.94-3.79" />
-            </svg>
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => navigate('/notifications')}
+              className="w-10 h-10 bg-gray-100 rounded-2xl flex items-center justify-center hover:bg-gray-200 transition-all duration-200 relative"
+            >
+              <svg 
+                className="w-5 h-5 text-gray-600 animate-pulse" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" 
+                />
+              </svg>
+              {/* Notification indicator */}
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+          </div>
         </div>
       </header>
 

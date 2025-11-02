@@ -3,7 +3,7 @@ import Home from "./page/Home";
 import Signup from './page/Signup';
 import Login from './page/Login';
 import KYCVerification from './page/KYCVerification';
-import Dashboard from './page/dashboard';
+import Dashboard from './page/Dashboard';
 
 function App() {
   return (
