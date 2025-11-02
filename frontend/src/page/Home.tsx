@@ -1,6 +1,8 @@
+import { useNavigate } from 'react-router-dom';
 import Button from '../component/Button';
 
-const Home = ()=> {
+const Home = () => {
+    const navigate = useNavigate();
     return(
         <div className='w-full h-[100vh] flex flex-col items-center justify-between'>
             <div className="w-full bg-red-300 h-[33%] flex items-center justify-center" >
@@ -16,10 +18,10 @@ const Home = ()=> {
                 <Button 
                     className="w-[80%] h-15 bg-blue-600 text-blue-400 text-center rounded-md text-white py-4 "
                     btnTex="Get Started"
-                    
+                    onClick={() => navigate('/signup')}
                 />
                 <Button 
-                    className="w-[80%] h-15 border-blue-400 text-blue-400 text-center border border-blue-400 text-blue-400 rounded-md text-blue-600 py-4"
+                    className="w-[80%] h-15 border border-blue-400 text-center rounded-md text-blue-600 py-4"
                     btnTex="Log in"
                 />
                 </div>
