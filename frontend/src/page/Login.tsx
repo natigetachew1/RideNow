@@ -32,6 +32,14 @@ const Login = () => {
       console.log('Login data:', formData);
       
       await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const response = await fetch('http://192.168.137.46:3000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
       
       navigate('/dashboard');
     } catch (error) {
