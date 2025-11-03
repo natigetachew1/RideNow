@@ -1,159 +1,159 @@
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import Home from "./page/Home";
-import Signup from './page/Signup';
-import Login from './page/Login';
-import KYCVerification from './page/KYCVerification';
-import AdminLogin from './page/AdminLogin';
-import AdminDashboard from './page/AdminDashboard';
-import BikeManagement from './page/BikeManagement';
-import ReportsPage from './page/ReportsPage';
-import AdminProfile from './page/AdminProfile';
-import UserManagement from './page/UserManagement';
+import React, { createContext, useState, useContext, useEffect, type ReactNode } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { authService, type User as ApiUser } from './services/api';
 import Dashboard from './page/Dashboard';
 import MapPage from './page/MapPage';
-import Rent from './page/Rent';
 import Balance from './page/Balance';
 import Profile from './page/Profile';
-import EditProfile from './page/EditProfile';
+import Login from './page/Login';
+import Signup from './page/Signup';
+import KYCVerification from './page/KYCVerification';
 
-const useAuth = () => {
-  const isAuthenticated = localStorage.getItem('isAdminAuthenticated') === 'true';
-  return { isAuthenticated };
+interface AuthContextType {
+  user: ApiUser | null;
+  login: (email: string, password: string) => Promise<any>;
+  register: (userData: any) => Promise<any>;
+  logout: () => void;
+  updateProfile: (updates: any) => Promise<any>;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<ApiUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/admin/login');
+    const token = localStorage.getItem('token');
+    if (token) {
+      authService.getProfile()
+        .then(userData => setUser(userData))
+        .catch(() => {
+          localStorage.removeItem('token');
+          setUser(null);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-  }, [isAuthenticated, navigate]);
+  }, []);
 
-  if (!isAuthenticated) {
+  const login = async (email: string, password: string) => {
+    const response = await authService.login(email, password);
+    setUser(response.user as ApiUser);
+    localStorage.setItem('token', response.token);
+    return response;
+  };
+
+  const register = async (userData: any) => {
+    const response = await authService.register(userData);
+    setUser(response.user as ApiUser);
+    localStorage.setItem('token', response.token);
+    return response;
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+  };
+
+  const updateProfile = async (updates: any) => {
+    const updatedUser = await authService.updateProfile(updates);
+    setUser(updatedUser as ApiUser);
+    return updatedUser;
+  };
+
+  const value: AuthContextType = {
+    user,
+    login,
+    register,
+    logout,
+    updateProfile,
+    loading
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// Main App Component with Routing
+
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  return user ? <>{children}</> : <Navigate to="/login" />;
+};
+
+const App = () => {
+  const { loading } = useAuth();
+
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
-  return <>{children}</>;
-};
-
-import Sidebar from './component/Sidebar';
-
-
-const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar />
-      
-      {/* Main content */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Top header */}
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
-          <div className="flex-1 px-4 flex justify-between items-center md:ml-64">
-            <h1 className="text-xl font-semibold text-gray-900">
-              {window.location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Dashboard'}
-            </h1>
-            <div className="ml-4 flex items-center md:ml-6">
-              {/* Add any top-right content here (e.g., notifications, user menu) */}
-            </div>
-          </div>
-        </div>
-
-        {/* Page content */}
-        <main className="flex-1 relative overflow-y-auto focus:outline-none md:ml-64">
-          <div className="py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-              {children}
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="w-full h-full">
+    <Router>
       <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/kyc-verification" element={<KYCVerification />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={
-            <ProtectedRoute>
-              <AdminLayout>
-                <AdminDashboard />
-              </AdminLayout>
-            </ProtectedRoute>
-          } />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/map" element={<MapPage />} />
-          <Route path="/rent" element={<Rent />} />
-          <Route path="/balance" element={<Balance />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
-          <Route 
-            path="/admin/dashboard" 
-            element={
-              <ProtectedRoute>
-                <AdminLayout>
-                  <AdminDashboard />
-                </AdminLayout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/bikes" 
-            element={
-              <ProtectedRoute>
-                <AdminLayout>
-                  <BikeManagement />
-                </AdminLayout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/reports" 
-            element={
-              <ProtectedRoute>
-                <AdminLayout>
-                  <ReportsPage />
-                </AdminLayout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/profile" 
-            element={
-              <ProtectedRoute>
-                <AdminLayout>
-                  <AdminProfile />
-                </AdminLayout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/users" 
-            element={
-              <ProtectedRoute>
-                <AdminLayout>
-                  <UserManagement />
-                </AdminLayout>
-              </ProtectedRoute>
-            } 
-          />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/kyc-verification" element={<KYCVerification />} />
+        
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/map"
+          element={
+            <PrivateRoute>
+              <MapPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/balance"
+          element={
+            <PrivateRoute>
+              <Balance />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+        
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+    </Router>
   );
-}
+};
 
 export default App;

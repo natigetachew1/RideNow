@@ -5,7 +5,6 @@ import Button from '../component/Button';
 const KYCVerification = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { email, name, password, phone="", role="user", balance=0, subscriptionStatus="active", isKYCVerified=false, idType="", idNumber="" } = location.state || {};
   
   const [step, setStep] = useState<number>(1);
   const [idPhoto, setIdPhoto] = useState<string | null>(null);
@@ -155,26 +154,16 @@ const KYCVerification = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('KYC data:', { email, idPhoto, livePhoto });
+      console.log('KYC data:', { idPhoto, livePhoto });
       
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const response = await fetch('http://192.168.137.46:3000/api/users/register', {
+      const response = await fetch('http://192.168.137.245:8000/api/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name,
-          email,
-          password,
-          phone,
-          role,
-          balance,
-          subscriptionStatus,
-          isKYCVerified,
-          idType,
-          idNumber,
           licensePhoto : idPhoto,
           livePhoto : livePhoto,
     }),
